@@ -1,5 +1,5 @@
 ---
-title: "First Fencing R Project (for fun) "
+title: "First Fencing R Project (for fun)"
 author: "Tan Kah Hong"
 date: "2023-12-05"
 output: html_document

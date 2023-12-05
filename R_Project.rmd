@@ -1,0 +1,162 @@
+---
+title: "First Fencing R Project (for fun)"
+author: "Tan Kah Hong"
+date: "2023-12-05"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+Fencing competitions generate a wealth of data that captures the performance of every fencers from different clubs.  
+
+This project aims to create a tool that can organize, process and manipulate the data to provide a summary of the general performance of fencing clubs for a particular competition.
+
+## Key Features:
+- **Data Cleaning:** Alphanumeric characters, such as '3T', are replaced with numeric values, facilitating subsequent computations.
+  
+- **Club Standardization:** Clubs with multiple names are standardized by taking only the first value. This step ensures consistency in the analysis.
+  
+- **Whitespace Removal:** Extra white spaces are trimmed from the right of club names to prevent duplicate grouping caused by inconsistent spacing.
+
+- **Dynamic Visualization** By using the plotly package, users are able to interact with the visualization to compare how fencers perform on average as compared to other clubs.
+
+```{r}
+library(shiny)
+library(dplyr)
+library(readr)
+library(stringr)
+library(ggplot2)
+library(plotly)
+```
+
+## **Creating a user-defined function:**
+I noticed in the fencing competition results dataset, there are often entries with ranking/place named "__T". This causes the columns to take on the character data type which will pose as an obstacle when I am trying to compute and summarize the results.  
+
+Since the only column I am concerned with is the Place Column, I used the $ sign to access the Place column in the DF, data frame.  
+
+By using gsub, I was able to replace non-numeric characters in the values of the Place column. Additionally, using as.numeric converts my values to a numeric data type.
+
+```{Creating a user defined function}
+replace_and_convert <- function(DF) {
+  DF$Place <- gsub("[^0-9.]+", "", DF$Place)
+  DF$Place <- as.numeric(DF$Place)
+  return(DF)
+}
+```
+
+## **Creating the data processing feature**:
+
+Using dplyr tools, I was able to create the intended summary for my fencing data processing tool.  
+
+I created a single data manipulation pipeline for organisation,readability and clarity. 
+
+
+Firstly, I applied the replace_and_convert function to the data frame to ensure that the Place column only consists of numeric values.  
+
+Secondly, I only selected columns that has values and ignored columns like Divisions and License that are not applicable to the local fencing scene.  
+
+Thirdly, I included 2 string R functions within the mutate functions, str_split and str_trim. These 2 functions allows me to take the first club of fencers and remove any white spaces to prevent duplicate entries and ensure consistency.  
+Fourthly, I grouped the data frame according to the participating fencing clubs which will allow me to do a meaningful summary of the the performance of fencers from each club.    
+
+In conclusion, I condensed the data frame to display the overall count of fencers from each club in descending order, their average final rankings, and the highest/lowest ranked fencer. This provides coaches with a quick overview to identify fencers showing improvement and those who may require additional guidance.
+
+```{Data Processing Feature}
+Processed_DF<-DF|>
+  replace_and_convert()|>
+  select(Place,Name,Club_Name = `Club(s)`)|>
+  mutate(Club_Name = str_split(Club_Name, "/", simplify = TRUE)[, 1])|>
+  mutate(Club_Name = str_trim(Club_Name, side = "right"))|>
+  group_by(Club_Name)|>
+  summarise(Total_Number=n(),Average_Position=as.integer(mean(Place)),Highest_Ranking=as.integer(min(Place)),Highest_Ranked_Fencer=Name[which.min(Place)],Lowest_Ranking=as.integer(max(Place)),Lowest_Ranked_Fencer=Name[which.max(Place)])|>
+  arrange(desc(Total_Number))
+      return(Processed_DF)
+```
+
+## Creating the shiny app:
+After the creation of the user defined function and data processing feature. I decided to implement it in with the shiny app to allow users to easily upload the fencing results and interact with it.  
+
+In the user interface, I added a file input button that allows easy access for users to upload their fencing competition results.  
+
+In the server side, after the user uploaded their results, i implemented a reactive function for the program to process and read the uploaded CSV file and assigning it to DF.
+
+Once the data set is assigned to DF, I used the data processing feature earlier to process the data and generate a summary.  
+
+Lastly, I presented the summary generated with a dynamic visualisation using plotly and as tabular format on Shiny for easy viewing.
+
+```{r}
+# User defined function
+replace_and_convert <- function(DF) {
+  DF$Place <- gsub("[^0-9.]+", "", DF$Place)
+  DF$Place <- as.numeric(DF$Place)
+  return(DF)
+}
+
+# UI
+ui <- fluidPage(
+  titlePanel("Fencing Data Processing App"),
+  fileInput("file", "Choose CSV File"),
+  tableOutput("summaryTable"),
+  plotlyOutput("plot")
+)
+
+# Server
+server <- function(input, output) {
+## Reactive function to read and process and read the uploaded csv file.
+  Final_Data <- reactive({
+    req(input$file)
+    DF <- read_csv(input$file$datapath)
+    
+## Data Processing Feature
+Processed_DF<-DF|>
+  replace_and_convert()|>
+  select(Place,Name,Club_Name = `Club(s)`)|>
+  mutate(Club_Name = str_split(Club_Name, "/", simplify = TRUE)[, 1])|>
+  mutate(Club_Name = str_trim(Club_Name, side = "right"))|>
+  group_by(Club_Name)|>
+  summarise(Total_Number=n(),Average_Position=as.integer(mean(Place)),Highest_Ranking=as.integer(min(Place)),Highest_Ranked_Fencer=Name[which.min(Place)],Lowest_Ranking=as.integer(max(Place)),Lowest_Ranked_Fencer=Name[which.max(Place)])|>
+  arrange(desc(Total_Number))
+      return(Processed_DF)
+  })
+
+## Display the processed data in a table
+  output$summaryTable <- renderTable({
+    Final_Data()
+  })
+  
+  output$plot<-renderPlotly({
+  ggplot(data = Final_Data(), aes(x = Club_Name, y = Average_Position)) +
+  geom_bar(fill="deepskyblue",stat="identity")+
+  labs(title = "Fencer Statistics by Club",
+       x = "Total Number of Fencers",
+       y = "Average Position") +
+  theme_minimal(base_size = 6)
+    
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui, server)
+
+```
+
+## Conclusion
+In developing this simple fencing data processing tool, I managed to apply the various R packages that I was taught in my DSA 212 Data Science with R class.
+These packages were instrumental in streamlining the data analysis workflow.  
+
+- **The shiny package** empowered me to build an interactive web application that allowed users to effortlessly upload and process fencing competition data (in CSV format).
+
+- **The ReadR package** helped with the seamless integration of external data sets with its efficient reading and parsing of CSV files.  
+
+- **The Dplyr package** was crucial in providing the tools needed to manipulate and process the data to generate the summary which was the focal point of the project.  
+
+- **The stringR package** played a pivotal role in ensuring that club names are standardised and duplicates were prevented with the used of split and trim string.   
+
+- **The ggplot2 and plotly package** allows me to create easy to view dynamic visualizations and an alternative way for users to view the computed summary.
+
+These skills has collectively enabled the creation of a user-friendly tool that automates data cleaning and analysis of fencing competitions. Allowing coaches and fencers alike to track their performances from competition to competition.
+

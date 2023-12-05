@@ -1,0 +1,108 @@
+---
+title: "Fencing tracker project"
+author: "Tan Kah Hong"
+date: "2023-12-05"
+output: html_document
+---
+
+
+## The following packages are installed to help tidy and manipulate data from csv files. This allows the data to be presented in a easy to understand format with the aid of visualisations
+
+```{r}
+#installing packages
+install.packages("dplyr")
+install.packages("readr")
+install.packages("ggplot2")
+install.packages("tidyr")
+install.packages("shiny")
+install.packages("stringr")
+```
+
+## After installing the package, we load the packages into program
+
+```{r}
+#loading packages
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(tidyr)
+library(shiny)
+library(stringr)
+```
+## loading in data and manipulating data
+
+```{r}
+## Storing the csv file into a data frame for further data processing
+DF<-read_csv(file="AVFC Results 2023.csv")
+
+## Removing non-numeric characters from the place column
+replace_and_convert <- function(DF) {
+  DF$Place <- gsub("[^0-9.]+", "", DF$Place)
+  DF$Place <- as.numeric(DF$Place)
+  return(DF)
+
+}
+## Processed the data to give me a rough summary of how many fencers from each club went, their average positions, highest and lowest ranked fencer for that particular competition
+Processed_DF<-DF|>
+  replace_and_convert()|>
+  select(Place,Name,Clubs = `Club(s)`)|>
+  mutate(Clubs = str_split(Clubs, "/", simplify = TRUE)[, 1])|>
+  mutate(Clubs = str_trim(Clubs, side = "right"))|>
+  group_by(Clubs)|>
+  summarise(Total_Number=n(),Average_Position=as.integer(mean(Place)),Highest_Ranking=as.integer(min(Place)),Highest_Ranked_Fencer=Name[which.min(Place)],Lowest_Ranking=as.integer(max(Place)),Lowest_Ranked_Fencer=Name[which.max(Place)])
+
+Processed_DF
+```
+
+## Creating basic skeleton of the shiny app
+
+```{r}
+library(shiny)
+library(dplyr)
+library(readr)
+library(stringr)
+
+# I created a user defined function that removes alphanumeric characters like '3T' and replace them with 3. This allows me to further compute the average positions, as well as the highest and lowest ranked fencer.
+replace_and_convert <- function(DF) {
+  DF$Place <- gsub("[^0-9.]+", "", DF$Place)
+  DF$Place <- as.numeric(DF$Place)
+  return(DF)
+}
+
+# UI
+ui <- fluidPage(
+  titlePanel("Fencing Data Processing App"),
+  fileInput("file", "Choose CSV File"),
+  tableOutput("summaryTable"),
+  plotOutput("Plot")
+)
+
+# Server
+server <- function(input, output) {
+## Reactive function to read and process and read the uploaded csv file.
+  Final_Data <- reactive({
+    req(input$file)
+    DF <- read_csv(input$file$datapath)
+    
+## Included the data processing feature, in the mutate function, it takes only the first value of the string, in the event there are fencers with mulitple clubs, only the first club is taken. #Added the second mutate function as i encountered an issue where there are duplicate groups of the same university. This is caused by the extra white spacing after the last word. Therefore, I decided to use the str_trim to remove spaces from the right.
+Processed_DF<-DF|>
+  replace_and_convert()|>
+  select(Place,Name,Clubs = `Club(s)`)|>
+  mutate(Clubs = str_split(Clubs, "/", simplify = TRUE)[, 1])|>
+  mutate(Clubs = str_trim(Clubs, side = "right"))|>
+  group_by(Clubs)|>
+  summarise(Total_Number=n(),Average_Position=as.integer(mean(Place)),Highest_Ranking=as.integer(min(Place)),Highest_Ranked_Fencer=Name[which.min(Place)],Lowest_Ranking=as.integer(max(Place)),Lowest_Ranked_Fencer=Name[which.max(Place)])
+      return(Processed_DF)
+  })
+
+## Display the processed data in a table
+  output$summaryTable <- renderTable({
+    Final_Data()
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui, server)
+
+```
+

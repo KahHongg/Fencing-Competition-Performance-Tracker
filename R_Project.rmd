@@ -25,6 +25,8 @@ This project aims to create a tool that can organize, process and manipulate the
 
 - **Dynamic Visualization** By using the plotly package, users are able to interact with the visualization to compare how fencers perform on average as compared to other clubs.
 
+## What dataset am i taking in (where is it from, how is it structured)
+
 ```{r}
 library(shiny)
 library(dplyr)
@@ -72,8 +74,14 @@ Processed_DF<-DF|>
   mutate(Club_Name = str_split(Club_Name, "/", simplify = TRUE)[, 1])|>
   mutate(Club_Name = str_trim(Club_Name, side = "right"))|>
   group_by(Club_Name)|>
-  summarise(Total_Number=n(),Average_Position=as.integer(mean(Place)),Highest_Ranking=as.integer(min(Place)),Highest_Ranked_Fencer=Name[which.min(Place)],Lowest_Ranking=as.integer(max(Place)),Lowest_Ranked_Fencer=Name[which.max(Place)])|>
-  arrange(desc(Total_Number))
+  summarise(
+    Total_Number=n(), 
+    Average_Position=as.integer(mean(Place)), 
+    Highest_Ranking=as.integer(min(Place)),
+    Highest_Ranked_Fencer=Name[which.min(Place)],
+    Lowest_Ranking=as.integer(max(Place)),
+    Lowest_Ranked_Fencer=Name[which.max(Place)])|>
+    arrange(desc(Total_Number))
       return(Processed_DF)
 ```
 
@@ -112,14 +120,20 @@ server <- function(input, output) {
     DF <- read_csv(input$file$datapath)
     
 ## Data Processing Feature
-Processed_DF<-DF|>
+  Processed_DF<-DF|>
   replace_and_convert()|>
   select(Place,Name,Club_Name = `Club(s)`)|>
   mutate(Club_Name = str_split(Club_Name, "/", simplify = TRUE)[, 1])|>
   mutate(Club_Name = str_trim(Club_Name, side = "right"))|>
   group_by(Club_Name)|>
-  summarise(Total_Number=n(),Average_Position=as.integer(mean(Place)),Highest_Ranking=as.integer(min(Place)),Highest_Ranked_Fencer=Name[which.min(Place)],Lowest_Ranking=as.integer(max(Place)),Lowest_Ranked_Fencer=Name[which.max(Place)])|>
-  arrange(desc(Total_Number))
+  summarise(
+    Total_Number=n(), 
+    Average_Position=as.integer(mean(Place)), 
+    Highest_Ranking=as.integer(min(Place)),
+    Highest_Ranked_Fencer=Name[which.min(Place)],
+    Lowest_Ranking=as.integer(max(Place)),
+    Lowest_Ranked_Fencer=Name[which.max(Place)])|>
+    arrange(desc(Total_Number))
       return(Processed_DF)
   })
 

@@ -23,7 +23,7 @@ This project aims to create a tool that can organize, process and manipulate the
   
 - **Whitespace Removal:** Extra white spaces are trimmed from the right of club names to prevent duplicate grouping caused by inconsistent spacing.
 
-- **Dynamic Visualization** By using the plotly package, users are able to interact with the visualization to compare how fencers perform on average as compared to other clubs.
+- **Dynamic Datatable and Visualization** By using the plotly package, users are able to interact with the visualization to compare how fencers perform on average as compared to other clubs.
 
 ## **The Data Set:**
 
@@ -31,14 +31,14 @@ The fencing competition results are updated onto an online platform called Fenci
 
 
 
-![](C:\\Users\\Nicholas\\Pictures\\Screenshots\\Raffles invites screenshot.png)  
+![](C:\\Users\\Nicholas\\Pictures\\Screenshots\\Raffles_Invites_Screenshot.png)  
 
 <p align="center">
   <strong>An example of the FencingTimeLive data set in csv format</strong>
 </p>
 
 ## **Loading the libraries:**    
-I have selected the following libraries because it allows me to create a shiny app which users can easily interact and upload competition results, which can be parsed and read into R for data wrangling. Finally, an analysis of the data can be presented in a easy to read summary table and interactive visualisation.  
+I have selected the following libraries because it allows me to create a shiny app which users can easily interact and upload competition results, which can be parsed and read into R for data wrangling. Finally, an analysis of the data can be presented in a easy-to-read/interactive datatable and visualization.  
 
 ```{r}
 library(shiny)
@@ -47,6 +47,8 @@ library(readr)
 library(stringr)
 library(ggplot2)
 library(plotly)
+library(DT)
+library(RColorBrewer)
 ```
 
 ## **Creating a user-defined function:**
@@ -78,7 +80,7 @@ Secondly, I only selected columns that has values and ignored columns like Divis
 Thirdly, I included 2 string R functions within the mutate functions, str_split and str_trim. These 2 functions allows me to take the first club of fencers and remove any white spaces to prevent duplicate entries and ensure consistency.  
 Fourthly, I grouped the data frame according to the participating fencing clubs which will allow me to do a meaningful summary of the the performance of fencers from each club.    
 
-In conclusion, I condensed the data frame to display the overall count of fencers from each club in descending order, their average final rankings, and the highest/lowest ranked fencer. This provides coaches with a quick overview to identify fencers showing improvement and those who may require additional guidance.
+In conclusion, I condensed the data frame to display the overall count of fencers from each club in descending order, their average final rankings , and the highest/lowest ranked fencer. This provides coaches with a quick overview to identify fencers showing improvement and those who may require additional guidance.
 
 ```{Data Processing Feature}
 Processed_DF<-DF|>
@@ -107,7 +109,7 @@ In the server side, after the user uploaded their results, i implemented a react
 
 Once the data set is assigned to DF, I used the data processing feature earlier to process the data and generate a summary.  
 
-Lastly, I presented the summary generated with a dynamic visualisation using plotly and as tabular format on Shiny for easy viewing.
+Lastly, I presented the summary with interactive Datatable and visualisations using plotly and DT on Shiny for easy viewing.
 
 ```{r}
 # User defined function
@@ -121,14 +123,15 @@ replace_and_convert <- function(DF) {
 ui <- fluidPage(
   titlePanel("Fencing Data Processing App"),
   fileInput("file", "Choose CSV File"),
-  tableOutput("summaryTable"),
+  DTOutput("summaryTable"),
+  plotlyOutput("scatterplot"),
   plotlyOutput("plot")
 )
 
 # Server
 server <- function(input, output) {
 ## Reactive function to read and process and read the uploaded csv file.
-  Final_Data <- reactive({
+ Tabular_Data <- reactive({
     req(input$file)
     DF <- read_csv(input$file$datapath)
     
@@ -146,30 +149,84 @@ server <- function(input, output) {
     Highest_Ranked_Fencer=Name[which.min(Place)],
     Lowest_Ranking=as.integer(max(Place)),
     Lowest_Ranked_Fencer=Name[which.max(Place)])|>
-    arrange(desc(Total_Number))
+    arrange(Total_Number)
       return(Processed_DF)
   })
+## Separate data processing to compute other visualizations
+Visualisation_Data <- reactive({
+    req(input$file)
+    DF <- read_csv(input$file$datapath)
+    
+## Visualized data for the performance of all fencers
+  Visualised_DF<-DF|>
+  replace_and_convert()|>
+  select(Place,Name,Club_Name = `Club(s)`)|>
+  mutate(Club_Name = str_split(Club_Name, "/", simplify = TRUE)[, 1])|>
+  mutate(Club_Name = str_trim(Club_Name, side = "right"))|>
+  group_by(Club_Name)
+  
+  return(Visualised_DF)
+  })
+## Display the individual performances of each fencers organised by clubs.
+output$scatterplot <- renderPlotly({
+  data <- Visualisation_Data()
+
+  ggplot(data, aes(x = Place, y = Club_Name, color = as.factor(Place), text=Name )) +
+    geom_point(size = 3) +
+    labs(title = "Performance of all fencers", x = "Final Ranking", y = "Club Name", color = "Final Ranking") +
+    theme_minimal(base_size = 6) +
+    scale_color_manual(values = c("1" = "#fee101", "2" = "#d7d7d7", "3" = "#a77044", "darkgrey")) + 
+    theme(legend.position = "none") 
+})
 
 ## Display the processed data in a table
-  output$summaryTable <- renderTable({
-    Final_Data()
+  output$summaryTable <- renderDT({
+    Tabular_Data()
   })
   
-  output$plot<-renderPlotly({
-  ggplot(data = Final_Data(), aes(x = Club_Name, y = Average_Position)) +
-  geom_bar(fill="deepskyblue",stat="identity")+
-  labs(title = "Fencer Statistics by Club",
-       x = "Total Number of Fencers",
-       y = "Average Position") +
-  theme_minimal(base_size = 6)
-    
-  })
+  output$plot <- renderPlotly({
+    Tabular_Data()|>
+      mutate(Club_Name = reorder(Club_Name, Average_Position))|>
+      ggplot(aes(x = Club_Name, y = Average_Position)) +
+      geom_col(fill = "#076fa2") +
+      labs(title = "Fencer Statistics by Club",x = "Total Number of Fencers",y = "Average Position") +
+      theme_minimal(base_size = 6) +
+      coord_flip()
+})
+  
 }
 
 # Run the Shiny app
 shinyApp(ui, server)
 
 ```
+
+
+## **The Summary and Visualization Plots:**
+
+The computed summary uses the library, DT to create an interactive data table where users themselves can filter and search for the summary of their individual clubs, which are denoted by the search bar and arrow keys on the headers
+
+![](here::here()\\Screenshots\\Datatable_fencing.png)  
+
+<p align="center">
+  <strong>An example of the summary in datatable format</strong>
+</p>
+
+The scatter plot tracks the individual performance of each fencer and group them by their clubs. I used scale_colour_manual as I wanted to colour code the podium winners to highlight fencers who did exceptionally well in the particular competition. When hovered, it provides information of the fencer's Name, Club and Final Ranking using plotly
+
+![](..\\Screenshots\\Individual_Fencing_Performance.png)  
+
+<p align="center">
+  <strong>The scatter plot visualisation in action</strong>
+</p>
+
+The horizontal bar graph tracks the general performance of each clubs. When hovered, it provides information of the club's average position in that particular competition.
+
+![](C:\\Users\\Nicholas\\Pictures\\Screenshots\\Horizontal_Bar graph.png)  
+
+<p align="center">
+  <strong>The horizontal bar plot visualisation in action</strong>
+</p>
 
 ## **Conclusion:**
 In developing this simple fencing data processing tool, I managed to apply the various R packages that I was taught in my DSA 212 Data Science with R class.
@@ -183,7 +240,7 @@ These packages were instrumental in streamlining the data analysis workflow.
 
 - **The stringR package** played a pivotal role in ensuring that club names are standardised and duplicates were prevented with the used of split and trim string.   
 
-- **The ggplot2 and plotly package** allows me to create easy to view dynamic visualizations and an alternative way for users to view the computed summary.
+- **The ggplot2, plotly and DT package** allowed me to create easy to view dynamic visualizations and an interactive data table.
 
 These skills has collectively enabled the creation of a user-friendly tool that automates data cleaning and analysis of fencing competitions. Allowing coaches and fencers alike to track their performances from competition to competition.
 

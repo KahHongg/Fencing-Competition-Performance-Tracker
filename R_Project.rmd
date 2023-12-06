@@ -10,13 +10,13 @@ runtime: shiny
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Introduction
+## **Introduction:**
 
 Fencing competitions generate a wealth of data that captures the performance of every fencers from different clubs.  
 
 This project aims to create a tool that can organize, process and manipulate the data to provide a summary of the general performance of fencing clubs for a particular competition.
 
-## Key Features:
+## **Key Features:**
 - **Data Cleaning:** Alphanumeric characters, such as '3T', are replaced with numeric values, facilitating subsequent computations.
   
 - **Club Standardization:** Clubs with multiple names are standardized by taking only the first value. This step ensures consistency in the analysis.
@@ -25,7 +25,20 @@ This project aims to create a tool that can organize, process and manipulate the
 
 - **Dynamic Visualization** By using the plotly package, users are able to interact with the visualization to compare how fencers perform on average as compared to other clubs.
 
-## What dataset am i taking in (where is it from, how is it structured)
+## **The Data Set:**
+
+The fencing competition results are updated onto an online platform called FencingTimeLive. In this data set, there are options to extract the data and download in csv format. As we can see in this data set, there are multiple columns which have values with 'NA' and alpha numeric values in the place column that we can further data clean before data wrangling with it for further analysis.
+
+
+
+![](C:\\Users\\Nicholas\\Pictures\\Screenshots\\Raffles invites screenshot.png)  
+
+<p align="center">
+  <strong>An example of the FencingTimeLive data set in csv format</strong>
+</p>
+
+## **Loading the libraries:**    
+I have selected the following libraries because it allows me to create a shiny app which users can easily interact and upload competition results, which can be parsed and read into R for data wrangling. Finally, an analysis of the data can be presented in a easy to read summary table and interactive visualisation.  
 
 ```{r}
 library(shiny)
@@ -51,7 +64,7 @@ replace_and_convert <- function(DF) {
 }
 ```
 
-## **Creating the data processing feature**:
+## **Creating the data processing feature:**
 
 Using dplyr tools, I was able to create the intended summary for my fencing data processing tool.  
 
@@ -85,7 +98,7 @@ Processed_DF<-DF|>
       return(Processed_DF)
 ```
 
-## Creating the shiny app:
+## **Creating the shiny app:**
 After the creation of the user defined function and data processing feature. I decided to implement it in with the shiny app to allow users to easily upload the fencing results and interact with it.  
 
 In the user interface, I added a file input button that allows easy access for users to upload their fencing competition results.  
@@ -158,7 +171,7 @@ shinyApp(ui, server)
 
 ```
 
-## Conclusion
+## **Conclusion:**
 In developing this simple fencing data processing tool, I managed to apply the various R packages that I was taught in my DSA 212 Data Science with R class.
 These packages were instrumental in streamlining the data analysis workflow.  
 

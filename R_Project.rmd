@@ -172,7 +172,7 @@ output$scatterplot <- renderPlotly({
   data <- Visualisation_Data()
 
   ggplot(data, aes(x = Place, y = Club_Name, color = as.factor(Place), text=Name )) +
-    geom_point(size = 3) +
+    geom_point(position = position_jitter(width = 0.2, height = 0)) +
     labs(title = "Performance of all fencers", x = "Final Ranking", y = "Club Name", color = "Final Ranking") +
     theme_minimal(base_size = 6) +
     scale_color_manual(values = c("1" = "#fee101", "2" = "#d7d7d7", "3" = "#a77044", "darkgrey")) + 
@@ -212,7 +212,7 @@ The computed summary uses the library, DT to create an interactive data table wh
   <strong>An example of the summary in datatable format</strong>
 </p>
 
-The scatter plot tracks the individual performance of each fencer and group them by their clubs. I used scale_colour_manual as I wanted to colour code the podium winners to highlight fencers who did exceptionally well in the particular competition. When hovered, it provides information of the fencer's Name, Club and Final Ranking using plotly
+The scatter plot tracks the individual performance of each fencer and group them by their clubs. I used scale_colour_manual as I wanted to colour code the podium winners to highlight fencers who did exceptionally well in the particular competition. Additionally, I also used position jitter to account for scenarios where both fencers are tied for the same position causing an overlap and a potential loss in data. Lastly, with the help of plotly, it provides information of the fencer's Name, Club and Final Ranking when hovered
 
 ![](..\\Screenshots\\Individual_Fencing_Performance.png)  
 

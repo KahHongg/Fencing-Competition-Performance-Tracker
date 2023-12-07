@@ -1,5 +1,5 @@
 ---
-title: "Sabre Fencing Analytics"
+title: "Sabre Fencing Analytics with R"
 author: "Tan Kah Hong"
 date: "2023-12-05"
 output: html_document

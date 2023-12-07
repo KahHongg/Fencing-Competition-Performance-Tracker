@@ -1,5 +1,5 @@
 ---
-title: "First Fencing R Project (for fun) "
+title: "Sabre Fencing Analytics"
 author: "Tan Kah Hong"
 date: "2023-12-05"
 output: html_document
@@ -12,9 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## **Introduction:**
 
-Fencing competitions generate a wealth of data that captures the performance of every fencers from different clubs.  
+- Fencing competitions generate a wealth of data that captures the performance of every fencers from different clubs.  
 
-This project aims to create a tool that can organize, process and manipulate the data to provide a summary of the general performance of fencing clubs for a particular competition.
+- This project aims to create a tool that can organize, process and manipulate competition data to generate a performance report of individual fencers and fencing clubs.
 
 ## **Key Features:**
 - **Data Cleaning:** Alphanumeric characters, such as '3T', are replaced with numeric values, facilitating subsequent computations.
@@ -23,22 +23,29 @@ This project aims to create a tool that can organize, process and manipulate the
   
 - **Whitespace Removal:** Extra white spaces are trimmed from the right of club names to prevent duplicate grouping caused by inconsistent spacing.
 
-- **Dynamic Datatable and Visualization** By using the plotly package, users are able to interact with the visualization to compare how fencers perform on average as compared to other clubs.
+- **Dynamic Datatable and Visualization** With data table and interactive visualisations, users can interactively compare fencers' average performances across different clubs.
 
 ## **The Data Set:**
 
-The fencing competition results are updated onto an online platform called FencingTimeLive. In this data set, there are options to extract the data and download in csv format. As we can see in this data set, there are multiple columns which have values with 'NA' and alpha numeric values in the place column that we can further data clean before data wrangling with it for further analysis.
+- Fencing competition results are found on an online platform called FencingTimeLive.  
+
+- To streamline the analysis, we first need to address missing values and alphanumeric entries in the "Place" column of the CSV file downloaded from the platform.  
 
 
 
-![](..\\Screenshots\\Raffles_Invites_Screenshot.png)  
+![](..\\Screenshots\\Sample_Fencing_Time_Live_CSV_Dataset.png)  
 
 <p align="center">
   <strong>An example of the FencingTimeLive data set in csv format</strong>
 </p>
 
 ## **Loading the libraries:**    
-I have selected the following libraries because it allows me to create a shiny app which users can easily interact and upload competition results, which can be parsed and read into R for data wrangling. Finally, an analysis of the data can be presented in a easy-to-read/interactive datatable and visualization.  
+- To facilitate user interaction and data processing, I've opted for the following libraries, empowering the creation of a Shiny app. 
+
+- This app enables users to seamlessly upload competition results, which are then parsed and read into R for effective data wrangling.  
+
+- The culmination is a user-friendly interface presenting data in an easy-to-read datatable and interactive visualizations.  
+
 
 ```{r}
 library(shiny)
@@ -52,11 +59,11 @@ library(RColorBrewer)
 ```
 
 ## **Creating a user-defined function:**
-I noticed in the fencing competition results dataset, there are often entries with ranking/place named "__T". This causes the columns to take on the character data type which will pose as an obstacle when I am trying to compute and summarize the results.  
+- To address the challenge posed by alphanumeric values under the Place column named "__T" in the fencing competition result dataset, I utilized the $ sign to access the Place Column within the DF data frame.  
 
-Since the only column I am concerned with is the Place Column, I used the $ sign to access the Place column in the DF, data frame.  
+- Subsequently, I employed the gsub function to replace non-numeric characters in the values of the Place column with an empty string. This cleansing step ensures that only numeric values remain.    
 
-By using gsub, I was able to replace non-numeric characters in the values of the Place column. Additionally, using as.numeric converts my values to a numeric data type.
+- Finally, to further enhance the data type, I utilized as.numeric, converting the values to a numeric data type for streamlined computation and summarization of the results.  
 
 ```{Creating a user defined function}
 replace_and_convert <- function(DF) {
@@ -72,16 +79,21 @@ Using dplyr tools, I was able to create the intended summary for my fencing data
 
 I created a single data manipulation pipeline for organisation,readability and clarity. 
 
+Here is the breakdown of the steps:
 
-Firstly, I applied the replace_and_convert function to the data frame to ensure that the Place column only consists of numeric values.  
+- Applied the 'replace_and_convert' function to ensure the "Place" column contains only numeric values  
 
-Secondly, I only selected columns that has values and ignored columns like Divisions and License that are not applicable to the local fencing scene.  
+- Selected relevant columns using select to include only essential columns like "Place", "Name" and "Club_Name" that have values and excluded irrelevant columns like "Divisions" and "License" that has only NA values.  
 
-Thirdly, I included 2 string R functions within the mutate functions, str_split and str_trim. These 2 functions allows me to take the first club of fencers and remove any white spaces to prevent duplicate entries and ensure consistency.  
+- Employed string manipulation functions from the stringr package like "str_split" and "str_trim" to extract the first club name from multi-club entries and remove trailing white spaces to ensure consistency and avoid the risk of creating duplicates.  
 
-Fourthly, I grouped the data frame according to the participating fencing clubs which will allow me to do a meaningful summary of the the performance of fencers from each club.  
+- Grouped the data by fencing club to set the stage for club-specific summaries  
 
-In conclusion, I condensed the data frame to display the overall count of fencers from each club in descending order, their average final rankings , and the highest/lowest ranked fencer. This provides coaches with a quick overview to identify fencers showing improvement and those who may require additional guidance.
+- Computed key metrics for each club such as total number of participating fencers, average position attained, highest and lowest ranked result and medal tally.  
+
+- Arranged the results in descending order based on the total number of participating fencers from each club.
+
+In summary, this streamlined process provides a comprehensive overview of each fencing club's performance, aiding coaches in identifying trends, improvements, and areas for additional support among their fencers.
 
 ```{Data Processing Feature}
   Processed_DF<-DF|>
@@ -106,15 +118,18 @@ In conclusion, I condensed the data frame to display the overall count of fencer
 ```
 
 ## **Creating the shiny app:**
-After the creation of the user defined function and data processing feature. I decided to implement it in with the shiny app to allow users to easily upload the fencing results and interact with it.  
 
-In the user interface, I added a file input button that allows easy access for users to upload their fencing competition results.  
+Finally, I decided to integrate all the features created earlier with a shiny app to allow users to easily upload the results and interact with the computed summary.  
 
-In the server side, after the user uploaded their results, i implemented a reactive function for the program to process and read the uploaded CSV file and assigning it to DF.
+Here is the breakdown of the shiny app:  
 
-Once the data set is assigned to DF, I used the data processing feature earlier to process the data and generate a summary.  
+- In the User Interface (UI), it featured a file input button to allow users to upload the fencing competition results in csv format, downloaded from FencingTimeLive.
 
-Lastly, I presented the summary with interactive Datatable and visualisations using plotly and DT on Shiny for easy viewing.
+- In the Server side, reactive functions, "Tabular_Data" and "Visualisation_Data" was implemented to process the uploaded csv file and the data processing feature was applied for detailed analysis. It selected specific columnns and computed key metrics like average position, final ranking and medal counts based on the specific visualisations outputs.
+
+- This results in an interactive display using Datatables and visualizations powered by the plotly and DT packages. The Datatable displays essential metrics, including total fencers, average position, highest and lowest ranks, and medal counts. Visualizations, like the scatterplot for individual performances and the horizontal bar chart for average club performances.  
+
+- This streamlined approach offers fencing coaches a comprehensive overview, enabling them to identify patterns, improvements, and areas of focus among their fencers effectively.  
 
 ```{r}
 # User defined function
@@ -222,43 +237,49 @@ shinyApp(ui, server)
 
 ## **The Summary and Visualization Plots:**
 
-The computed summary uses the library, DT to create an interactive data table where users themselves can filter and search for the summary of their individual clubs, which are denoted by the search bar and arrow keys on the headers
+- The summary is presented interactively using the DT library, allowing users to filter and search for specific club summaries using the search bar and arrow keys on the headers.
 
-![](..\\Screenshots\\Datatable_fencing.png)  
+![](..\\Screenshots\\Datatable_Key_Metrics.png)  
 
 <p align="center">
-  <strong>An example of the summary in datatable format</strong>
+  <strong>An example of the summary in Datatable format</strong>
 </p>
 
-The scatter plot tracks the individual performance of each fencer and group them by their clubs. I used scale_colour_manual as I wanted to colour code the podium winners to highlight fencers who did exceptionally well in the particular competition. Additionally, I also used position jitter to account for scenarios where both fencers are tied for the same position causing an overlap and a potential loss in data. Lastly, with the help of plotly, it provides information of the fencer's Name, Club and Final Ranking when hovered
+- The scatter plot visually tracks individual fencer performance, grouping them by clubs.  
 
-![](..\\Screenshots\\Individual_Fencing_Performance.png)  
+- Utilizing scale_colour_manual, podium winners are color-coded for emphasis on exceptional performance.  
+
+- Position jitter handles tie scenarios, preventing overlap. Plotly enhances interactivity, offering fencer details (Name, Club, Final Ranking) on hover.
+
+![](..\\Screenshots\\Scatterplot_Invidiual_Fencing_Performance.png)  
 
 <p align="center">
   <strong>The scatter plot visualisation in action</strong>
 </p>
 
-The horizontal bar graph tracks the general performance of each clubs. When hovered, it provides information of the club's average position in that particular competition.
+- The horizontal bar graph illustrates overall club performance. Hovering reveals the club's average position in the competition.
 
-![](..\\Screenshots\\Horizontal_Bar graph.png)  
+![](..\\Screenshots\\Horizontal_Bar_Chart_Average_Position.png)  
 
 <p align="center">
   <strong>The horizontal bar plot visualisation in action</strong>
 </p>
 
 ## **Conclusion:**
-In developing this simple fencing data processing tool, I managed to apply the various R packages that I was taught in my DSA 212 Data Science with R class.
-These packages were instrumental in streamlining the data analysis workflow.  
+In developing this simple fencing data processing tool, I managed to apply the various R packages that I was taught in my DSA 212 Data Science with R class.  
 
-- **The shiny package** empowered me to build an interactive web application that allowed users to effortlessly upload and process fencing competition data (in CSV format).
+These packages were instrumental in streamlining the data analysis workflow:  
 
-- **The ReadR package** helped with the seamless integration of external data sets with its efficient reading and parsing of CSV files.  
+- **The shiny package** enabled the creation of an interactive web app, simplifying the upload and processing of fencing competition data in CSV format.    
 
-- **The Dplyr package** was crucial in providing the tools needed to manipulate and process the data to generate the summary which was the focal point of the project.  
+- **The ReadR package** facilitated seamless integration of external datasets, efficiently reading and parsing CSV files.    
 
-- **The stringR package** played a pivotal role in ensuring that club names are standardised and duplicates were prevented with the used of split and trim string.   
+- **The Dplyr package** was crucial for data manipulation and processing, providing essential tools for generating the project's focal point – the interactive report display.  
+- **The stringR package** played a pivotal role in standardizing club names, preventing duplicates through string split and trim.     
 
-- **The ggplot2, plotly and DT package** allowed me to create easy to view dynamic visualizations and an interactive data table.
+- **The RColorBrewer package** allowed me to color code data points to improve the intuitive understanding of my visualisations. 
 
-These skills has collectively enabled the creation of a user-friendly tool that automates data cleaning and analysis of fencing competitions. Allowing coaches and fencers alike to track their performances from competition to competition.
+- **The ggplot2, plotly and DT package** empowered the creation of dynamic visualizations and an interactive data table for easy viewing.  
+
+Collectively, these skills resulted in a user-friendly tool automating data cleaning and analysis of fencing competitions, offering coaches and fencers a streamlined way to track performance across competitions.
 

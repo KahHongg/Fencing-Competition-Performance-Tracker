@@ -182,12 +182,14 @@ Visualisation_Data <- reactive({
 output$scatterplot <- renderPlotly({
   data <- Visualisation_Data()
 
-  ggplot(data, aes(x = Place, y = Club_Name, color = as.factor(Place), text=Name )) +
+ scatter_data <- ggplot(data, aes(x = Place, y = Club_Name, color = as.factor(Place), text = paste("Name:", Name, "<br>Club:", Club_Name, "<br>Final Ranking:", Place))) +
     geom_point(size=3,position = position_jitter(width = 0.2, height = 0)) +
     labs(title = "Performance of all fencers", x = "Final Ranking", y = "Club Name", color = "Final Ranking") +
     theme_minimal(base_size = 6) +
     scale_color_manual(values = c("1" = "#fee101", "2" = "#d7d7d7", "3" = "#a77044", "darkgrey")) + 
     theme(legend.position = "none") 
+  
+  ggplotly(scatter_data, tooltip="text")
 })
 
 ## Display the processed data in a table
@@ -195,15 +197,20 @@ output$scatterplot <- renderPlotly({
     Tabular_Data()
   })
   
-  output$plot <- renderPlotly({
-    Tabular_Data()|>
-      mutate(Club_Name = reorder(Club_Name, Average_Position))|>
-      ggplot(aes(x = Club_Name, y = Average_Position)) +
-      geom_col(fill = "#076fa2") +
-      labs(title = "Fencer Statistics by Club",x = "Total Number of Fencers",y = "Average Position") +
-      theme_minimal(base_size = 6) +
-      coord_flip()
+output$plot <- renderPlotly({
+  data <- Tabular_Data()|>
+    mutate(Club_Name = reorder(Club_Name, Average_Position))
+
+  bar_data <- ggplot(data, aes(x = Club_Name, y = Average_Position, fill = Average_Position,text = paste("Club Name:",Club_Name,"<br>Average Position:",Average_Position))) +
+    geom_col() +
+    scale_fill_gradient(low = "#66c2a5", high = "#fc8d62", name = "Average Position") +
+    labs(title = "Fencer Statistics by Club", x = "Club Name", y = "Average Position", fill = "Average Position") +
+    theme_minimal(base_size = 6) +
+    coord_flip() 
+
+  ggplotly(bar_data, tooltip = "text")
 })
+
   
 }
 

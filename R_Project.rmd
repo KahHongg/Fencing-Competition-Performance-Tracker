@@ -251,7 +251,7 @@ shinyApp(ui, server)
 
 - Position jitter handles tie scenarios, preventing overlap. Plotly enhances interactivity, offering fencer details (Name, Club, Final Ranking) on hover.
 
-![](..\\Screenshots\\Scatterplot_Invidiual_Fencing_Performance.png)  
+![](..\\Screenshots\\Scatterplot_Individual_Fencing_Performance.png)  
 
 <p align="center">
   <strong>The scatter plot visualisation in action</strong>

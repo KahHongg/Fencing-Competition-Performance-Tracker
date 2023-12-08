@@ -33,7 +33,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-![](..\\Screenshots\\Sample_Fencing_Time_Live_CSV_Dataset.png)  
+![](.\Screenshots\Sample_Fencing_Time_Live_CSV_Dataset.png)  
 
 <p align="center">
   <strong>An example of the FencingTimeLive data set in csv format</strong>
@@ -239,7 +239,7 @@ shinyApp(ui, server)
 
 - The summary is presented interactively using the DT library, allowing users to filter and search for specific club summaries using the search bar and arrow keys on the headers.
 
-![](..\\Screenshots\\Datatable_Key_Metrics.png)  
+![](.\Screenshots\Datatable_Key_Metrics.png)  
 
 <p align="center">
   <strong>An example of the summary in Datatable format</strong>
@@ -251,7 +251,7 @@ shinyApp(ui, server)
 
 - Position jitter handles tie scenarios, preventing overlap. Plotly enhances interactivity, offering fencer details (Name, Club, Final Ranking) on hover.
 
-![](..\\Screenshots\\Scatterplot_Individual_Fencing_Performance.png)  
+![](.\Screenshots\Scatterplot_Individual_Fencing_Performance.png)  
 
 <p align="center">
   <strong>The scatter plot visualisation in action</strong>
@@ -259,7 +259,7 @@ shinyApp(ui, server)
 
 - The horizontal bar graph illustrates overall club performance. Hovering reveals the club's average position in the competition.
 
-![](..\\Screenshots\\Horizontal_Bar_Chart_Average_Position.png)  
+![](.\Screenshots\Horizontal_Bar_Chart_Average_Position.png)  
 
 <p align="center">
   <strong>The horizontal bar plot visualisation in action</strong>

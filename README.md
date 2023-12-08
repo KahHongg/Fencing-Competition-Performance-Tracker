@@ -12,19 +12,19 @@ Date: 2023-12-05
 
 # Key Features:
 
-## Data Cleaning:
+**Data Cleaning:**
 
 Alphanumeric characters, such as '3T', are replaced with numeric values, facilitating subsequent computations.
 
-## Club Standardization:
+**Club Standardization:**
 
 Clubs with multiple names are standardized by taking only the first value. This step ensures consistency in the analysis.
 
-## Whitespace Removal:
+**Whitespace Removal:**
 
 Extra white spaces are trimmed from the right of club names to prevent duplicate grouping caused by inconsistent spacing.
 
-## Dynamic Datatable and Visualization:
+**Dynamic Datatable and Visualizations:**
 
 The tool provides a dynamic datatable and interactive visualizations, allowing users to compare fencers' average performances across different clubs interactively.
 

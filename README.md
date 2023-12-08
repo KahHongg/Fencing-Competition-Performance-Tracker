@@ -94,8 +94,9 @@ Processed_DF <- DF %>%
 ```
 # Creating the Shiny App:
 
-The Shiny app integrates all the features created earlier, allowing users to seamlessly upload competition results and interact with the computed summary. 
-The app features a user interface with a file input button for uploading the CSV file and showcases the processed data in an easy-to-read datatable and interactive visualizations.
+* The Shiny app integrates all the features created earlier, allowing users to seamlessly upload competition results and interact with the computed summary.
+  
+* The app features a user interface with a file input button for uploading the CSV file and showcases the processed data in an easy-to-read datatable and interactive visualizations.
 
 # Shiny App
 

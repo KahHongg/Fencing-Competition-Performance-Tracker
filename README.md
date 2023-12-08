@@ -1,4 +1,4 @@
-Sabre Fencing Analytics
+# Sabre Fencing Analytics
 
 Author: Tan Kah Hong
 

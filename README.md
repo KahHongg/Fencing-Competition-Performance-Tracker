@@ -34,9 +34,34 @@ The tool provides a dynamic datatable and interactive visualizations, allowing u
   
 * To streamline the analysis, addressing missing values and alphanumeric entries in the "Place" column of the CSV file downloaded from the platform is crucial.
 
-(insert Sample FencingTimeLive CSV Dataset)
+| Place |    Name   |  Club(s) | Division | Country | License # |
+|:-----:|:---------:|:--------:|:--------:|:-------:|:---------:|
+|   1   |  Fencer 1 | School A |    NA    |   SGP   |     NA    |
+|   2   |  Fencer 2 | School B |    NA    |   SGP   |     NA    |
+|   3T  |  Fencer 3 | School C |    NA    |   PHI   |     NA    |
+|   3T  |  Fencer 4 | School D |    NA    |   SGP   |     NA    |
+|   5   |  Fencer 5 | School A |    NA    |   SGP   |     NA    |
+|   6   |  Fencer 6 | School B |    NA    |   SGP   |     NA    |
+|   7   |  Fencer 7 | School C |    NA    |   SGP   |     NA    |
+|   8   |  Fencer 8 | School D |    NA    |   PHI   |     NA    |
+|   9   |  Fencer 9 | School A |    NA    |   SGP   |     NA    |
+|   10  | Fencer 10 | School B |    NA    |   SGP   |     NA    |
+|   11  | Fencer 11 | School C |    NA    |   SGP   |     NA    |
+|   12  | Fencer 12 | School D |    NA    |   SGP   |     NA    |
+|   13  | Fencer 13 | School A |    NA    |   SGP   |     NA    |
+|   14  | Fencer 14 | School B |    NA    |   SGP   |     NA    |
+|   15  | Fencer 15 | School C |    NA    |   MAC   |     NA    |
+|   16  | Fencer 16 | School D |    NA    |   SGP   |     NA    |
+|   17  | Fencer 17 | School A |    NA    |   PHI   |     NA    |
+|   18  | Fencer 18 | School B |    NA    |   SGP   |     NA    |
+|   19  | Fencer 19 | School C |    NA    |   SGP   |     NA    |
+|   20  | Fencer 20 | School D |    NA    |   SGP   |     NA    |
+|   21  | Fencer 21 | School A |    NA    |   SGP   |     NA    |
+|   22  | Fencer 22 | School B |    NA    |   SGP   |     NA    |
+|   23  | Fencer 23 | School C |    NA    |   SGP   |     NA    |
+|   24  | Fencer 24 | School D |    NA    |   SGP   |     NA    |
 
-An example of the FencingTimeLive data set in CSV format.
+Table: An example of the FencingTimeLive data set in CSV format.
 
 # Loading the Libraries:
 

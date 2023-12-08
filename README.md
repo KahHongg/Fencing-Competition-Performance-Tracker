@@ -4,31 +4,31 @@ Author: Tan Kah Hong
 
 Date: 2023-12-05
 
-## Introduction:
+# Introduction:
 
 * Fencing competitions generate a wealth of data capturing the performance of individual fencers across different clubs.
   
 * The Sabre Fencing Analytics project aims to create a versatile tool capable of organizing, processing, and manipulating competition data to generate insightful performance reports for individual fencers and fencing clubs.
 
-## Key Features:
+# Key Features:
 
-# Data Cleaning:
+## Data Cleaning:
 
 Alphanumeric characters, such as '3T', are replaced with numeric values, facilitating subsequent computations.
 
-# Club Standardization:
+## Club Standardization:
 
 Clubs with multiple names are standardized by taking only the first value. This step ensures consistency in the analysis.
 
-# Whitespace Removal:
+## Whitespace Removal:
 
 Extra white spaces are trimmed from the right of club names to prevent duplicate grouping caused by inconsistent spacing.
 
-# Dynamic Datatable and Visualization:
+## Dynamic Datatable and Visualization:
 
 The tool provides a dynamic datatable and interactive visualizations, allowing users to compare fencers' average performances across different clubs interactively.
 
-## The Data Set:
+# The Data Set:
 
 * Fencing competition results are sourced from an online platform called FencingTimeLive.
   
@@ -38,7 +38,7 @@ The tool provides a dynamic datatable and interactive visualizations, allowing u
 
 An example of the FencingTimeLive data set in CSV format.
 
-## Loading the Libraries:
+# Loading the Libraries:
 
 * To facilitate user interaction and data processing, the following libraries are employed, enabling the creation of a Shiny app:
   
@@ -52,7 +52,7 @@ library(plotly)
 library(DT)
 library(RColorBrewer)
 ```
-## Creating a User-Defined Function:
+# Creating a User-Defined Function:
 
 * To address the challenge posed by alphanumeric values under the "Place" column named "__T" in the fencing competition result dataset, a user-defined function named replace_and_convert is created. 
 
@@ -65,7 +65,7 @@ replace_and_convert <- function(DF) {
   return(DF)
 }
 ```
-## Creating the Data Processing Feature:
+# Creating the Data Processing Feature:
 
 * Utilizing dplyr tools, a streamlined data processing feature is created to organize and summarize the fencing data effectively. 
 
@@ -92,20 +92,20 @@ Processed_DF <- DF %>%
   ) %>%
   arrange(Total_Number)
 ```
-## Creating the Shiny App:
+# Creating the Shiny App:
 
 The Shiny app integrates all the features created earlier, allowing users to seamlessly upload competition results and interact with the computed summary. 
 The app features a user interface with a file input button for uploading the CSV file and showcases the processed data in an easy-to-read datatable and interactive visualizations.
 
 # Shiny App
 
-# How to use:
+## How to use:
 
 1. Upload your fencing data CSV file using the "Choose CSV File" input.
    
 2. Explore individual fencer performances with a scatter plot and delve into computed key mertrics with the bar chart and data table.
    
-# User Interface Section:
+## User Interface Section:
 
 * The fluidPage creates the main layout for the shiny app.
   
@@ -121,7 +121,7 @@ ui <- fluidPage(
   plotlyOutput("plot")
 )
 ```
-# Server Section:
+## Server Section:
 
 * The server function defines the server-side logic for the shiny app.
   
@@ -141,13 +141,13 @@ ui <- fluidPage(
 
 ```
 server <- function(input, output) {
-  #Reactive functions for data processing and visualization
+  ## Reactive functions for data processing and visualization
   Tabular_Data <- reactive({
     # Read and process the uploaded CSV file
     req(input$file)
     DF <- read_csv(input$file$datapath)
     
-    #Data Processing Feature
+    ## Data Processing Feature
     Processed_DF <- DF %>%
       replace_and_convert() %>%
       select(Place, Name, Club_Name = `Club(s)`) %>%
@@ -172,11 +172,11 @@ server <- function(input, output) {
   })
 
   Visualisation_Data <- reactive({
-    #Read the uploaded CSV file for visualization
+    ## Read the uploaded CSV file for visualization
     req(input$file)
     DF <- read_csv(input$file$datapath)
     
-    #Visualized data for the performance of all fencers
+    ## Visualized data for the performance of all fencers
     Visualised_DF <- DF %>%
       replace_and_convert() %>%
       select(Place, Name, Club_Name = `Club(s)`) %>%
@@ -186,7 +186,8 @@ server <- function(input, output) {
     
     return(Visualised_DF)
   })
-  #Display individual performances of each fencer organized by clubs
+
+  ## Display individual performances of each fencer organized by clubs
 
   output$scatterplot <- renderPlotly({
     data <- Visualisation_Data()
@@ -201,7 +202,7 @@ server <- function(input, output) {
     ggplotly(scatter_data, tooltip = "text")
   })
 
-  # Display the processed data in a table
+  ## Display the processed data in a table
   output$summaryTable <- renderDT({
     Tabular_Data()
   })
@@ -221,7 +222,7 @@ server <- function(input, output) {
   })
 }
 
-# Run the Shiny app
+## Run the Shiny app
 shinyApp(ui, server)
 
 ```

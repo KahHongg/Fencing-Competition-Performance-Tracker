@@ -1,8 +1,8 @@
 # Sabre Fencing Analytics
 
-Author: Tan Kah Hong
+**Author:** Tan Kah Hong
 
-Date: 2023-12-05
+**Date:** 2023-12-05
 
 # Introduction:
 

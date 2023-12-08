@@ -36,7 +36,7 @@ An example of the FencingTimeLive data set in CSV format.
 ## Loading the Libraries:
 
 To facilitate user interaction and data processing, the following libraries are employed, enabling the creation of a Shiny app:
-
+```
 library(shiny)
 library(dplyr)
 library(readr)
@@ -45,25 +45,25 @@ library(ggplot2)
 library(plotly)
 library(DT)
 library(RColorBrewer)
-
+```
 ## Creating a User-Defined Function:
 
 To address the challenge posed by alphanumeric values under the "Place" column named "__T" in the fencing competition result dataset, a user-defined function named replace_and_convert is created. 
 
 This function ensures that only numeric values remain in the "Place" column for streamlined computation and summarization of the results.
-
+```
 replace_and_convert <- function(DF) {
   DF$Place <- gsub("[^0-9.]+", "", DF$Place)
   DF$Place <- as.numeric(DF$Place)
   return(DF)
 }
-
+```
 ## Creating the Data Processing Feature:
 
 Utilizing dplyr tools, a streamlined data processing feature is created to organize and summarize the fencing data effectively. 
 
 This feature computes key metrics for each fencing club, such as total number of participating fencers, average position attained, highest and lowest ranked result, and medal tally.
-
+```
 Processed_DF <- DF %>%
   replace_and_convert() %>%
   select(Place, Name, Club_Name = `Club(s)`) %>%
@@ -83,13 +83,14 @@ Processed_DF <- DF %>%
     Total_Medal_Count = sum(Gold, Silver, Bronze)
   ) %>%
   arrange(Total_Number)
-
+```
 ## Creating the Shiny App:
 
 The Shiny app integrates all the features created earlier, allowing users to seamlessly upload competition results and interact with the computed summary. 
 The app features a user interface with a file input button for uploading the CSV file and showcases the processed data in an easy-to-read datatable and interactive visualizations.
 
 # Shiny App
+```
 ui <- fluidPage(
   titlePanel("Fencing Data Processing App"),
   fileInput("file", "Choose CSV File"),
@@ -144,8 +145,9 @@ server <- function(input, output) {
     
     return(Visualised_DF)
   })
-
+```
   # Display individual performances of each fencer organized by clubs
+  ```
   output$scatterplot <- renderPlotly({
     data <- Visualisation_Data()
 
@@ -178,7 +180,7 @@ server <- function(input, output) {
     ggplotly(bar_data, tooltip = "text")
   })
 }
-
+```
 # Run the Shiny app
 shinyApp(ui, server)
 

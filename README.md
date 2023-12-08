@@ -61,8 +61,6 @@ The tool provides a dynamic datatable and interactive visualizations, allowing u
 |   23  | Fencer 23 | School C |    NA    |   SGP   |     NA    |
 |   24  | Fencer 24 | School D |    NA    |   SGP   |     NA    |
 
-Table: An example of the FencingTimeLive data set in CSV format.
-
 # Loading the Libraries:
 
 * To facilitate user interaction and data processing, the following libraries are employed, enabling the creation of a Shiny app:

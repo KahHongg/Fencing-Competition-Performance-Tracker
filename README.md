@@ -30,10 +30,6 @@ The tool provides a dynamic datatable and interactive visualizations, allowing u
 
 # The Data Set:
 
-* Fencing competition results are sourced from an online platform called FencingTimeLive.
-  
-* To streamline the analysis, addressing missing values and alphanumeric entries in the "Place" column of the CSV file downloaded from the platform is crucial.
-
 | Place |    Name   |  Club(s) | Division | Country | License # |
 |:-----:|:---------:|:--------:|:--------:|:-------:|:---------:|
 |   1   |  Fencer 1 | School A |    NA    |   SGP   |     NA    |
@@ -60,6 +56,10 @@ The tool provides a dynamic datatable and interactive visualizations, allowing u
 |   22  | Fencer 22 | School B |    NA    |   SGP   |     NA    |
 |   23  | Fencer 23 | School C |    NA    |   SGP   |     NA    |
 |   24  | Fencer 24 | School D |    NA    |   SGP   |     NA    |
+
+* Fencing competition results are sourced from an online platform called FencingTimeLive.
+  
+* To streamline the analysis, addressing missing values and alphanumeric entries in the "Place" column of the CSV file downloaded from the platform is crucial.
 
 # Loading the Libraries:
 

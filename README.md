@@ -123,12 +123,6 @@ Processed_DF <- DF %>%
 
 # Shiny App
 
-## How to use:
-
-1. Upload your fencing data CSV file using the "Choose CSV File" input.
-   
-2. Explore individual fencer performances with a scatter plot and delve into computed key mertrics with the bar chart and data table.
-   
 ## User Interface Section:
 
 * The fluidPage creates the main layout for the shiny app.
@@ -250,4 +244,8 @@ server <- function(input, output) {
 shinyApp(ui, server)
 
 ```
+## How to use:
 
+1. Upload your fencing data CSV file using the "Choose CSV File" input.
+   
+2. Explore individual fencer performances with a scatter plot and delve into computed key mertrics with the bar chart and data table.

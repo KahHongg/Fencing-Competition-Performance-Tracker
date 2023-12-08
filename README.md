@@ -1,4 +1,4 @@
-# Sabre Fencing Analytics
+# Fencing Competition Results Performance Tracker
 
 **Author:** Tan Kah Hong
 

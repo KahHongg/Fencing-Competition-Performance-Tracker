@@ -115,6 +115,7 @@ In summary, this streamlined process provides a comprehensive overview of each f
     Total_Medal_Count= sum(Gold,Silver,Bronze))|>
     arrange(Total_Number)
       return(Processed_DF)
+
 ```
 
 ## **Creating the shiny app:**
@@ -178,6 +179,9 @@ server <- function(input, output) {
       return(Processed_DF)
   
   })
+ 
+
+ 
 ## Separate data processing to compute other visualizations
 Visualisation_Data <- reactive({
     req(input$file)
